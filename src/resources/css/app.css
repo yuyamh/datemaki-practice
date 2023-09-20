@@ -1,0 +1,72 @@
+@import "@fortawesome/fontawesome-free/css/all.css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+    box-sizing: border-box;
+}
+
+.nav-items {
+    @apply flex items-center px-3 py-2 text-white font-bold leading-normal hover:border-b-2 hover:text-yellow-800 hover:bg-yellow-200 hover:border-yellow-900;
+}
+
+.markdown-table thead, tr, th, tbody, td {
+    @apply border border-gray-300 border-solid;
+}
+
+.markdown-table thead {
+    @apply bg-orange-200 text-lg;
+}
+
+.markdown-table th {
+    @apply p-2;
+}
+
+.markdown-table td {
+    @apply p-2;
+}
+
+table.table-index th {
+    @apply px-6 py-4 text-lg text-left text-gray-100 whitespace-nowrap;
+}
+
+table.table-index td {
+    @apply px-6 py-3 whitespace-nowrap;
+}
+
+.show-th {
+    @apply p-4 bg-yellow-200 border-2 border-b-0 border-gray-300 border-solid md:text-sm lg:text-base;
+}
+
+.show-td {
+    @apply p-4 border-t-2 border-l-2 border-r-2 md:border-2 border-gray-300 border-solid bg-gray-50 text-center md:text-left break-all;
+}
+
+.show-tr {
+    @apply flex flex-col md:table-row;
+}
+
+.form-group {
+    @apply  mt-1 mb-8 w-full;
+}
+
+.form-input {
+    @apply w-full box-border border-gray-500 rounded-md shadow-md focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent;
+}
+
+.form-input-search {
+    @apply w-full box-border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent;
+}
+
+.radio-label {
+    @apply block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-orange-400 peer-checked:font-bold peer-checked:text-white;
+}
+
+.radio-level {
+    @apply block cursor-pointer select-none rounded-xl p-2 text-center peer-checked:bg-green-500 peer-checked:font-bold peer-checked:text-white;
+}
+
+.drop-buttons {
+    @apply m-3 text-base bg-transparent rounded-lg hover:text-yellow-800 focus:bg-yellow-200 focus:ring-yellow-800 active:bg-yellow-100 focus:text-yellow-800;
+}
