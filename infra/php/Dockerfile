@@ -1,5 +1,8 @@
 FROM php:8.1-fpm-buster
 
+# Viteサーバ用
+EXPOSE 5173
+
 # COMPOSER_ALLOW_SUPERUSER rootでのインストールを許可する設定
 # COMPOSER_HOME 作業ディレクトリを固定化
 ENV COMPOSER_ALLOW_SUPERUSER=1 \
