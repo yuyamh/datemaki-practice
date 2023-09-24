@@ -17,7 +17,7 @@ class ForceHttps
     public function handle(Request $request, Closure $next)
     {
         // httpによるアクセスをhttpsにリダイレクトする
-        if (\App::environment(['production']) && isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER["HTTP_X_FORWARDED_PROTO"] != 'https')
+        if (\App::environment(['production']) && $_SERVER["HTTP_X_FORWARDED_PROTO"] != 'https')
         {
             return redirect()->secure($request->getRequestUri());
         }
