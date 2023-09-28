@@ -53,18 +53,27 @@ class DatabaseSeeder extends Seeder
             TextSeeder::class,
         ]);
 
+        // 今回、他の方からお借りした教案はシーディングしないことにする。
+        // if (app()->isLocal() || app()->runningUnitTests())
+        // {
+        //     //開発&テスト環境はファクトリでダミーデータ登録。
+        //     $this->call([
+        //         DummyDataSeeder::class, //ダミーデータの登録
+        //     ]);
+        // } else
+        // {
+        //     // 本番環境は本格的なサンプルデータ登録。
+        //     $this->call([
+        //         SampleUserSeeder::class, // サンプルユーザの登録
+        //         SamplePostsSeeder::class, // サンプルデータの登録
+        //     ]);
+        // }
+
         if (app()->isLocal() || app()->runningUnitTests())
         {
             //開発&テスト環境はファクトリでダミーデータ登録。
             $this->call([
                 DummyDataSeeder::class, //ダミーデータの登録
-            ]);
-        } else
-        {
-            // 本番環境は本格的なサンプルデータ登録。
-            $this->call([
-                SampleUserSeeder::class, // サンプルユーザの登録
-                SamplePostsSeeder::class, // サンプルデータの登録
             ]);
         }
     }
