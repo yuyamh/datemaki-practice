@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\ResetPasswordNotification;
 
 class User extends Authenticatable
 {
@@ -70,6 +71,13 @@ class User extends Authenticatable
     public function getImageUrlAttribute()
     {
         return \Storage::url('public/profile_icons/' . $this->profile_image);
+    }
+
+    // パスワードリセット用
+    public function sendPasswordResetNotification($token)
+    {
+        $url = url("reset-password/${token}");
+        $this->notify(new ResetPasswordNotification($url));
     }
 
 }
