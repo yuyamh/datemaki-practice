@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Web\BookmarkController;
+use App\Http\Controllers\Web\MyPostController;
+use App\Http\Controllers\Web\ProfileController;
+use App\Http\Controllers\Web\PostController;
+use App\Http\Controllers\Web\PageController;
+use App\Http\Controllers\Web\UserController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\PostController;
-use App\Http\Controllers\MyPostController;
-use App\Http\Controllers\BookmarkController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\PageController;
 
 /*
 |--------------------------------------------------------------------------

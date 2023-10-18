@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Web;
 
 use App\Models\Bookmark;
+use App\Http\Controllers\Controller;
 
 class BookmarkController extends Controller
 {
