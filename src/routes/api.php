@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthenticateController;
+use App\Http\Controllers\Api\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,3 +22,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/user', [AuthenticateController::class, 'user']);
     Route::post('/logout', [AuthenticateController::class, 'logout']);
 });
+
+Route::get('/posts', [PostController::class, 'index']);
