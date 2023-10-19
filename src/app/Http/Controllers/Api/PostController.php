@@ -129,13 +129,20 @@ class PostController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 教案の削除処理
      */
-    public function destroy($id)
+    public function destroy(Post $post)
     {
-        //
+        $this->authorize($post);
+        $post->delete();
+        // アップロードされたファイルの削除
+        \Storage::delete('public/files/' . $post->file_name);
+
+                return response()->json(
+            [
+                'message' => '教案を削除しました。',
+                'post' => $post,
+            ], 200
+        );
     }
 }
