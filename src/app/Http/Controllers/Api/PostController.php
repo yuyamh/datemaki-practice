@@ -49,7 +49,6 @@ class PostController extends Controller
 
         $post->save();
 
-        // return redirect(route('myposts.index'))->with('successMessage', '教案を投稿しました。');
         return response()->json(
             [
                 'message' => '教案を投稿しました。',
@@ -90,15 +89,43 @@ class PostController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * 教案の更新処理
      */
-    public function update(Request $request, $id)
+    public function update(PostFormRequest $request, Post $post)
     {
-        //
+        $this->authorize($post);
+        $validated = $request->validated();
+
+        // ファイルの差し替えを行う
+        if (isset($validated['file_name']))
+        {
+            // 元ファイルの削除
+            \Storage::delete('public/files/' . $post->file_name);
+
+            // 新ファイルの保存
+            $file = $validated['file_name'];
+            $ext  = $file->getClientOriginalextension();
+            $fileName = time() . '.' . $ext;
+            $file->storeAs('public/files', $fileName);
+
+            // 新ファイルのデータをpostsテーブルの各カラムに保存
+            $post->file_name = $fileName;
+            $post->file_mimetype = $file->getMimeType();
+            $post->file_size = $file->getSize();
+        }
+
+        $post->title = $validated['title'];
+        $post->description = $validated['description'];
+        $post->level = $validated['level'];
+        $post->text_id = $validated['text_id'];
+        $post->save();
+
+        return response()->json(
+            [
+                'message' => '教案を更新しました。',
+                'post' => $post,
+            ], 200
+        );
     }
 
     /**
