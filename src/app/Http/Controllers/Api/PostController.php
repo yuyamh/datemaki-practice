@@ -30,14 +30,34 @@ class PostController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * 教案の詳細データ取得
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Post $post)
     {
-        //
+        if (isset($post->file_size))
+        {
+            $kilobyte = 1024; // 1KB
+            $megabyte = $kilobyte * 1000; // 1MB
+
+            // アップロードファイルのサイズをメガバイト、キロバイトへ変換
+            if ($megabyte <= $post->file_size)
+            {
+                // メガバイトへ変換、小数点2桁より下の桁は四捨五入
+                $post->file_size = round($post->file_size / $megabyte, 2) . 'MB';
+            } elseif ($kilobyte <= $post->file_size)
+            {
+                // キロバイトへ変換、小数点2桁より下の桁は四捨五入
+                $post->file_size = round($post->file_size / $kilobyte, 2) . 'KB';
+            } else
+            {
+                $post->file_size = $post->file_size . 'B';
+            }
+        }
+
+        return response()->json($post, 200);
     }
 
     /**
