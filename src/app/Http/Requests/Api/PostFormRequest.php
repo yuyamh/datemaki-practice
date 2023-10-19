@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Api;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class StorePostRequest extends FormRequest
+class PostFormRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -39,5 +41,16 @@ class StorePostRequest extends FormRequest
         ];
 
         return $rules;
+    }
+
+    // API用のエラーレスポンスを返す
+    protected function failedValidation(Validator $validator)
+    {
+        $res = response()->json([
+            'errors' => $validator->errors(),
+            ],
+            400);
+            
+        throw new HttpResponseException($res);
     }
 }

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Web\StorePostRequest;
 use App\Models\Post;
 use App\Models\Text;
 use Illuminate\Http\Request;
-use App\Http\Requests\StorePostRequest;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 
