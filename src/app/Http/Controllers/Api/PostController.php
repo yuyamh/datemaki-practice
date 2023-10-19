@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\PostFormRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -19,14 +20,42 @@ class PostController extends Controller
 
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * 教案の新規保存
      */
-    public function store(Request $request)
+    public function store(PostFormRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $post = new Post();
+        $post->title = $validated['title'];
+        $post->description = $validated['description'];
+        $post->level = $validated['level'];
+        $post->user_id = \Auth::id();
+        $post->text_id = $validated['text_id'];
+
+        if (isset($validated['file_name']))
+        {
+            $file = $validated['file_name'];
+            $ext  = $file->getClientOriginalextension();
+
+            // ファイルをストレージへ保存
+            $fileName = time() . '.' . $ext;
+            $file->storeAs('public/files', $fileName);
+
+            $post->file_name = $fileName;
+            $post->file_mimetype = $file->getMimeType();
+            $post->file_size = $file->getSize();
+        }
+
+        $post->save();
+
+        // return redirect(route('myposts.index'))->with('successMessage', '教案を投稿しました。');
+        return response()->json(
+            [
+                'message' => '教案を投稿しました。',
+                'post' => $post,
+            ], 200
+        );
     }
 
     /**
