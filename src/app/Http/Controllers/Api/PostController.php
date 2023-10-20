@@ -112,7 +112,30 @@ class PostController extends Controller
             }
         }
 
-        return response()->json($post, 200);
+        $data = [
+            "result" => [
+                "id" => $post->id,
+                "title" => $post->title,
+                "descripion" => $post->description,
+                "user" => [
+                    "id" => $post->user_id,
+                    "name" => $post->user->name,
+                ],
+                "file" => [
+                    "file_name" => $post->file_name ?? null,
+                    "file_mimetype" => $post->file_mimetype ?? null,
+                    "file_size" => $post->file_size ?? null,
+                ],
+                "text" => [
+                    "id" => $post->text_id ?? null,
+                    "name" => $post->text->text_name ?? null,
+                ],
+                "created_at" => $post->created_at,
+                "updated_at" => $post->created_at,
+            ]
+        ];
+
+        return response()->json($data, 200);
     }
 
     /**
