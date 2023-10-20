@@ -138,10 +138,25 @@ class PostController extends Controller
         // アップロードされたファイルの削除
         \Storage::delete('public/files/' . $post->file_name);
 
-                return response()->json(
+        return response()->json(
             [
                 'message' => '教案を削除しました。',
                 'post' => $post,
+            ], 200
+        );
+    }
+
+    /**
+     * ブックマークした教案を表示する
+     */
+    public function bookmark_posts()
+    {
+        $posts = \Auth::user()->bookmark_posts()->latest()->get();
+
+        return response()->json(
+            [
+                'message' => 'あなたがブックマークした教案はこちらです。',
+                'posts' => $posts,
             ], 200
         );
     }

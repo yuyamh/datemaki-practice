@@ -22,6 +22,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/posts', PostController::class)->except('index');
     Route::get('/user', [AuthenticateController::class, 'user']);
     Route::post('/logout', [AuthenticateController::class, 'logout']);
+    Route::get('/bookmarks', [PostController::class, 'bookmark_posts']);
 });
 
 Route::get('/posts', [PostController::class, 'index']);
