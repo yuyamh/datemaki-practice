@@ -14,7 +14,34 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::latest()->get();
+        $posts = Post::select('id', 'title', 'description', 'level', 'user_id','text_id', 'updated_at')
+            ->latest('updated_at')
+            ->with(['user', 'text'])
+            ->get();
+
+        // ユーザー名、テキスト名を含む新しいコレクションを作成
+        $posts = $posts->map(function ($post) {
+            $data = [
+                'id' => $post->id,
+                'title' => $post->title,
+                'description' => $post->description,
+                'level' => $post->level,
+                'user_name' => $post->user->name,
+                'updated_at' => $post->updated_at,
+            ];
+
+            // テキストがnullの場合
+            if ($post->text)
+            {
+                $data['text_name'] = $post->text->text_name;
+            } else
+            {
+                $data['text_name'] = 'なし';
+            }
+
+            return $data;
+        });
+
         return response()->json($posts, 200);
     }
 
