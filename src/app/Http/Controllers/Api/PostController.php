@@ -22,27 +22,32 @@ class PostController extends Controller
         // ユーザー名、テキスト名を含む新しいコレクションを作成
         $posts = $posts->map(function ($post) {
             $data = [
-                'id' => $post->id,
-                'title' => $post->title,
-                'description' => $post->description,
-                'level' => $post->level,
-                'user_name' => $post->user->name,
-                'updated_at' => $post->updated_at,
+                "id" => $post->id,
+                "title" => $post->title,
+                "description" => $post->description,
+                "level" => $post->level,
+                "user" => [
+                    "id" => $post->user_id,
+                    "name" => $post->user->name,
+                ],
+                "text" => [
+                    "id" => $post->text_id ?? null,
+                    "name" => $post->text->text_name ?? null,
+                ],
+                "updated_at" => $post->created_at,
             ];
-
-            // テキストがnullの場合
-            if ($post->text)
-            {
-                $data['text_name'] = $post->text->text_name;
-            } else
-            {
-                $data['text_name'] = 'なし';
-            }
 
             return $data;
         });
 
-        return response()->json($posts, 200);
+        return response()->json(
+            [
+                'status' => 'true',
+                'result' => [
+                    'posts' => $posts,
+                ],
+            ], 200
+        );
     }
 
 
@@ -78,17 +83,16 @@ class PostController extends Controller
 
         return response()->json(
             [
-                'message' => '教案を投稿しました。',
-                'post' => $post,
+                'status' => 'true',
+                'result' => [
+                    'post' => $post,
+                ],
             ], 200
         );
     }
 
     /**
      * 教案の詳細データ取得
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function show(Post $post)
     {
@@ -112,30 +116,36 @@ class PostController extends Controller
             }
         }
 
-        $data = [
-            "result" => [
-                "id" => $post->id,
-                "title" => $post->title,
-                "descripion" => $post->description,
-                "user" => [
-                    "id" => $post->user_id,
-                    "name" => $post->user->name,
-                ],
-                "file" => [
-                    "file_name" => $post->file_name ?? null,
-                    "file_mimetype" => $post->file_mimetype ?? null,
-                    "file_size" => $post->file_size ?? null,
-                ],
-                "text" => [
-                    "id" => $post->text_id ?? null,
-                    "name" => $post->text->text_name ?? null,
-                ],
-                "created_at" => $post->created_at,
-                "updated_at" => $post->created_at,
-            ]
+        $post = [
+            "id" => $post->id,
+            "title" => $post->title,
+            "description" => $post->description,
+            "user" => [
+                "id" => $post->user_id,
+                "name" => $post->user->name,
+            ],
+            "file" => [
+                "file_name" => $post->file_name ?? null,
+                "file_mimetype" => $post->file_mimetype ?? null,
+                "file_size" => $post->file_size ?? null,
+                "file_url" => $post->file_url,
+            ],
+            "text" => [
+                "id" => $post->text_id ?? null,
+                "name" => $post->text->text_name ?? null,
+            ],
+            "created_at" => $post->created_at,
+            "updated_at" => $post->created_at,
         ];
 
-        return response()->json($data, 200);
+        return response()->json(
+            [
+                'status' => 'true',
+                'result' => [
+                    'post' => $post,
+                ],
+            ], 200
+        );
     }
 
     /**
@@ -172,8 +182,10 @@ class PostController extends Controller
 
         return response()->json(
             [
-                'message' => '教案を更新しました。',
-                'post' => $post,
+                'status' => 'true',
+                'result' => [
+                    'post' => $post,
+                ],
             ], 200
         );
     }
@@ -190,8 +202,8 @@ class PostController extends Controller
 
         return response()->json(
             [
-                'message' => '教案を削除しました。',
-                'post' => $post,
+                'status' => 'true',
+                'result' => "OK",
             ], 200
         );
     }
@@ -230,8 +242,8 @@ class PostController extends Controller
 
         return response()->json(
             [
-                'message' => 'あなたがブックマークした教案はこちらです。',
-                'results' => [
+                'status' => 'true',
+                'result' => [
                     'posts' => $posts,
                 ],
             ], 200
