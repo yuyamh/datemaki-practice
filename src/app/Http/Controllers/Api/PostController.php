@@ -201,12 +201,39 @@ class PostController extends Controller
      */
     public function bookmark_posts()
     {
-        $posts = \Auth::user()->bookmark_posts()->latest()->get();
+        $posts = \Auth::user()
+            ->bookmark_posts()
+            ->latest()
+            ->with('user')
+            ->get();
+
+        // ユーザー名、テキスト名を含む新しいコレクションを作成
+        $posts = $posts->map(function ($post) {
+            $data = [
+                "id" => $post->id,
+                "title" => $post->title,
+                "description" => $post->description,
+                "level" => $post->level,
+                "user" => [
+                    "id" => $post->user_id,
+                    "name" => $post->user->name,
+                ],
+                "text" => [
+                    "id" => $post->text_id ?? null,
+                    "name" => $post->text->text_name ?? null,
+                ],
+                "updated_at" => $post->created_at,
+            ];
+
+            return $data;
+        });
 
         return response()->json(
             [
                 'message' => 'あなたがブックマークした教案はこちらです。',
-                'posts' => $posts,
+                'results' => [
+                    'posts' => $posts,
+                ],
             ], 200
         );
     }
