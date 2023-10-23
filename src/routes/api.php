@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthenticateController;
 use App\Http\Controllers\Api\BookmarkController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\TextController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -30,4 +31,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
 });
 
 Route::get('/posts', [PostController::class, 'index']);
+Route::get('/texts', [TextController::class, 'index']);
 Route::apiResource('/users', UserController::class)->only(['index', 'show']);
