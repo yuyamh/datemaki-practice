@@ -30,8 +30,19 @@ class BookmarkController extends Controller
     /**
      * ブックマークを削除する
      */
-    public function destroy(Bookmark $bookmark)
+    public function destroy($postId)
     {
-        
+        $user = \Auth::user();
+        if ($user->is_bookmarked($postId))
+        {
+            $user->bookmark_posts()->detach($postId);
+        }
+
+        return response()->json(
+            [
+                'status' => 'true',
+                'result' => 'OK',
+            ], 200
+        );
     }
 }
