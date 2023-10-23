@@ -61,5 +61,50 @@ class UserController extends Controller
         );
     }
 
+    /**
+     * ユーザ情報の詳細取得
+     */
+    public function show($id)
+    {
+        // ユーザーが投稿した教案一覧を表示する。
+        $user = User::findOrFail($id);
+        $userName = $user->name;
+        $posts = $user->posts()
+            ->select('id', 'title', 'description', 'level', 'user_id','text_id', 'updated_at')
+            ->latest('updated_at')
+            ->get();
 
+        // ユーザ情報のコレクションの編成
+        $posts = $posts->map(function ($post) {
+            $data = [
+                "id" => $post->id,
+                "title" => $post->title,
+                "description" => $post->description,
+                "level" => $post->level,
+                "user" => [
+                    "id" => $post->user_id,
+                    "name" => $post->user->name,
+                ],
+                "text" => [
+                    "id" => $post->text_id ?? null,
+                    "name" => $post->text->text_name ?? null,
+                ],
+                "updated_at" => $post->created_at,
+            ];
+            return $data;
+        });
+
+        $data = [
+            'user_name' => $userName,
+            'posts' => $posts,
+        ];
+
+
+        return response()->json(
+            [
+                'status' => 'true',
+                'result' => $data,
+            ], 200
+        );
+    }
 }
