@@ -17,6 +17,17 @@ class BookmarkController extends Controller
         if (!$user->is_bookmarked($postId))
         {
             $user->bookmark_posts()->attach($postId);
+        } else
+        {
+            // すでにブックマーク済みの場合
+            return response()->json(
+                [
+                    'status' => 'false',
+                    'result' => [
+                        'message' => 'すでにブックマーク済みです。',
+                    ]
+                ], 409
+            );
         }
 
         return response()->json(
@@ -36,6 +47,17 @@ class BookmarkController extends Controller
         if ($user->is_bookmarked($postId))
         {
             $user->bookmark_posts()->detach($postId);
+        } else
+        {
+            // すでにブックマーク解除済みの場合
+            return response()->json(
+                [
+                    'status' => 'false',
+                    'result' => [
+                        'message' => 'すでにブックマーク解除済みです。',
+                    ]
+                ], 409
+            );
         }
 
         return response()->json(
