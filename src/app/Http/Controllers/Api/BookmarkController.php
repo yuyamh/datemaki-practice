@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
-use Illuminate\Http\Request;
 
 class BookmarkController extends Controller
 {
@@ -12,9 +11,20 @@ class BookmarkController extends Controller
     /**
      * ブックマークを追加する
      */
-    public function store(Request $request)
+    public function store($postId)
     {
-        //
+        $user = \Auth::user();
+        if (!$user->is_bookmarked($postId))
+        {
+            $user->bookmark_posts()->attach($postId);
+        }
+
+        return response()->json(
+            [
+                'status' => 'true',
+                'result' => 'OK',
+            ], 200
+        );
     }
 
     /**
@@ -22,6 +32,6 @@ class BookmarkController extends Controller
      */
     public function destroy(Bookmark $bookmark)
     {
-        //
+        
     }
 }
