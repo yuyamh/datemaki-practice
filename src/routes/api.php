@@ -28,6 +28,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/bookmarks', [PostController::class, 'bookmark_posts']);
     Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'store']);
     Route::delete('/posts/{post}/unbookmark', [BookmarkController::class, 'destroy']);
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 Route::get('/posts', [PostController::class, 'index']);
