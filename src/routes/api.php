@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthenticateController;
 use App\Http\Controllers\Api\BookmarkController;
 use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\TextController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -28,6 +29,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/bookmarks', [PostController::class, 'bookmark_posts']);
     Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'store']);
     Route::delete('/posts/{post}/unbookmark', [BookmarkController::class, 'destroy']);
+    Route::patch('/profile', [ProfileController::class, 'update']);
+    Route::delete('/profile', [ProfileController::class, 'destroy']);
 });
 
 Route::get('/posts', [PostController::class, 'index']);
