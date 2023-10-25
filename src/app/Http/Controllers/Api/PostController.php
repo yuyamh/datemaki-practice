@@ -128,7 +128,7 @@ class PostController extends Controller
                 "file_name" => $post->file_name ?? null,
                 "file_mimetype" => $post->file_mimetype ?? null,
                 "file_size" => $post->file_size ?? null,
-                "file_url" => $post->file_url,
+                "file_url" => $post->file_name ? $post->file_url : null, // ファイル添付がない場合は、URLをNULLで返す
             ],
             "text" => [
                 "id" => $post->text_id ?? null,
