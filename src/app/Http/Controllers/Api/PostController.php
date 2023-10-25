@@ -34,7 +34,7 @@ class PostController extends Controller
                     "id" => $post->text_id ?? null,
                     "name" => $post->text->text_name ?? null,
                 ],
-                "updated_at" => $post->created_at,
+                "updated_at" => $post->updated_at,
             ];
 
             return $data;
