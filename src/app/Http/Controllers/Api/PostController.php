@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\PostFormRequest;
+use App\Facades\PostService;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
@@ -81,6 +82,12 @@ class PostController extends Controller
 
         $post->save();
 
+        // ファイルサイズの表記を編集
+        if (isset($post->file_size))
+        {
+            $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
+        }
+
         return response()->json(
             [
                 'status' => 'true',
@@ -98,22 +105,7 @@ class PostController extends Controller
     {
         if (isset($post->file_size))
         {
-            $kilobyte = 1024; // 1KB
-            $megabyte = $kilobyte * 1000; // 1MB
-
-            // アップロードファイルのサイズをメガバイト、キロバイトへ変換
-            if ($megabyte <= $post->file_size)
-            {
-                // メガバイトへ変換、小数点2桁より下の桁は四捨五入
-                $post->file_size = round($post->file_size / $megabyte, 2) . 'MB';
-            } elseif ($kilobyte <= $post->file_size)
-            {
-                // キロバイトへ変換、小数点2桁より下の桁は四捨五入
-                $post->file_size = round($post->file_size / $kilobyte, 2) . 'KB';
-            } else
-            {
-                $post->file_size = $post->file_size . 'B';
-            }
+            $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
         }
 
         $post = [
@@ -179,6 +171,12 @@ class PostController extends Controller
         $post->level = $validated['level'];
         $post->text_id = $validated['text_id'];
         $post->save();
+
+        // ファイルサイズの表記を編集
+        if (isset($post->file_size))
+        {
+            $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
+        }
 
         return response()->json(
             [
