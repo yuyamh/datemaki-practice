@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\Api\AuthenticateRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,9 +13,9 @@ class AuthenticateController extends Controller
     /**
      * ログイン認証
      */
-    public function login(Request $request)
+    public function login(AuthenticateRequest $request)
     {
-        // TODO:バリデーションを設定する
+
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials))
         {
