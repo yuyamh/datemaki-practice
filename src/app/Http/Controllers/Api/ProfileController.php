@@ -10,6 +10,35 @@ class ProfileController extends Controller
 {
 
     /**
+     * プロフィール情報を一覧取得する
+     */
+    public function index()
+    {
+        $user = \Auth::user();
+
+        $user = [
+            "id" => $user->id,
+            "name" => $user->name,
+            "email" => $user->email,
+            "email_verified_at" => $user->email_verified_at,
+            "role" => $user->role,
+            "profile_image" => $user->profile_image,
+            "image_url" => $user->profile_image ? $user->image_url : null,
+            "created_at" => $user->created_at,
+            "updated_at" => $user->updated_at,
+        ];
+
+        return response()->json(
+            [
+                'status' => 'true',
+                'result' => [
+                    'user' => $user,
+                ],
+            ], 200
+        );
+    }
+
+    /**
      * プロフィール情報の更新（名前、メールアドレス、プロフィールアイコン）
      */
     public function update(ApiProfileUpdateRequest $request)
