@@ -28,19 +28,6 @@ class AuthenticateController extends Controller
     }
 
     /**
-     * ログイン中のユーザ情報を返す
-     */
-    public function user(Request $request)
-    {
-        return response()->json(
-            [
-                $request->user()->name,
-                $request->user()->email,
-            ]
-        );
-    }
-
-    /**
      * ログアウト処理
      */
     public function logout(Request $request)
