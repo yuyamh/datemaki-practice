@@ -24,13 +24,11 @@ Route::post('/login', [AuthenticateController::class, 'login']);
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('/posts', PostController::class)->except('index');
-    Route::get('/user', [AuthenticateController::class, 'user']);
     Route::post('/logout', [AuthenticateController::class, 'logout']);
     Route::get('/bookmarks', [PostController::class, 'bookmark_posts']);
     Route::post('/posts/{post}/bookmark', [BookmarkController::class, 'store']);
     Route::delete('/posts/{post}/unbookmark', [BookmarkController::class, 'destroy']);
-    Route::patch('/profile', [ProfileController::class, 'update']);
-    Route::delete('/profile', [ProfileController::class, 'destroy']);
+    Route::apiResource('/profile', ProfileController::class)->only(['index', 'update']);
 });
 
 Route::get('/posts', [PostController::class, 'index']);
