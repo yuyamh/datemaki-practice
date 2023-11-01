@@ -65,31 +65,9 @@ class ProfileController extends BaseController
 
         $request->user()->save();
 
-        if ($request->user()->profile_image)
-        {
-            $data = [
-                "id" => $request->user()->id,
-                "name" => $request->user()->name,
-                "email" => $request->user()->email,
-                "profile_image" => $request->user()->image_url,
-            ];
-        } else
-        {
-            $data = [
-                "id" => $request->user()->id,
-                "name" => $request->user()->name,
-                "email" => $request->user()->email,
-                "profile_image" => asset('images/user_icon.png')
-            ];
-        }
+        // TODO: エラーレスポンス導入時にRequestからのエラー返却考える
+        $this->setResponseData(['status' => true]);
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'user' => $data,
-                ],
-            ], 200
-        );
+        return $this->responseSuccess();
     }
 }
