@@ -51,43 +51,43 @@ class UserController extends BaseController
     {
         // ユーザーが投稿した教案一覧を表示する。
         $user = User::findOrFail($id);
-        $userName = $user->name;
         $posts = $user->posts()
+            ->with('text')
             ->select('id', 'title', 'description', 'level', 'user_id','text_id', 'updated_at')
             ->latest('updated_at')
             ->get();
 
-        // ユーザ情報のコレクションの編成
-        $posts = $posts->map(function ($post) {
-            $data = [
-                "id" => $post->id,
-                "title" => $post->title,
-                "description" => $post->description,
-                "level" => $post->level,
-                "user" => [
-                    "id" => $post->user_id,
-                    "name" => $post->user->name,
-                ],
-                "text" => [
-                    "id" => $post->text_id ?? null,
-                    "name" => $post->text->text_name ?? null,
-                ],
-                "updated_at" => $post->created_at,
-            ];
-            return $data;
-        });
-
-        $data = [
-            'user_name' => $userName,
-            'posts' => $posts,
+        $response = [
+            'user' => [
+                'id'   => $user->id,
+                'name' => $user->name,
+            ],
+            'posts' => [],
         ];
 
+        foreach ($posts as $post)
+        {
+            $text = null;
+            if ($post->text_id)
+            {
+                $text = [
+                    'id'   => $post->text_id,
+                    'name' => $post->text->text_name,
+                ];
+            }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => $data,
-            ], 200
-        );
+            $tmp = [
+                'id'          => $post->id,
+                'title'       => $post->title,
+                'description' => $post->description,
+                'level'       => $post->level,
+                'text'        => $text,
+            ];
+            $response['posts'][] = $tmp;
+        }
+
+        $this->setResponseData($response);
+
+        return $this->responseSuccess();
     }
 }
