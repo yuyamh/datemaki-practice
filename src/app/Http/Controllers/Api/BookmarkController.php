@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Bookmark;
 
-class BookmarkController extends Controller
+class BookmarkController extends BaseController
 {
 
     /**
@@ -20,6 +19,7 @@ class BookmarkController extends Controller
         } else
         {
             // すでにブックマーク済みの場合
+            // TODO:エラーレスポンス共通化
             return response()->json(
                 [
                     'status' => 'false',
@@ -30,12 +30,9 @@ class BookmarkController extends Controller
             );
         }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => 'OK',
-            ], 200
-        );
+        $this->setResponseData(['status' => true]);
+
+        return $this->responseSuccess();
     }
 
     /**
@@ -50,6 +47,7 @@ class BookmarkController extends Controller
         } else
         {
             // すでにブックマーク解除済みの場合
+            // TODO:エラーレスポンス共通化
             return response()->json(
                 [
                     'status' => 'false',
@@ -60,11 +58,8 @@ class BookmarkController extends Controller
             );
         }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => 'OK',
-            ], 200
-        );
+        $this->setResponseData(['status' => true]);
+
+        return $this->responseSuccess();
     }
 }
