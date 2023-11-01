@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\ApiProfileUpdateRequest;
 use Illuminate\Http\Request;
 
-class ProfileController extends Controller
+class ProfileController extends BaseController
 {
 
     /**
@@ -16,26 +15,21 @@ class ProfileController extends Controller
     {
         $user = \Auth::user();
 
-        $user = [
-            "id" => $user->id,
-            "name" => $user->name,
-            "email" => $user->email,
+        $response = [
+            "id"                => $user->id,
+            "name"              => $user->name,
+            "email"             => $user->email,
             "email_verified_at" => $user->email_verified_at,
-            "role" => $user->role,
-            "profile_image" => $user->profile_image,
-            "image_url" => $user->profile_image ? $user->image_url : null,
-            "created_at" => $user->created_at,
-            "updated_at" => $user->updated_at,
+            "role"              => $user->role,
+            "profile_image"     => $user->profile_image,
+            "image_url"         => $user->profile_image ? $user->image_url : asset('images/user_icon.png'),
+            "created_at"        => $user->created_at,
+            "updated_at"        => $user->updated_at,
         ];
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'user' => $user,
-                ],
-            ], 200
-        );
+        $this->setResponseData($response);
+
+        return $this->responseSuccess(false);
     }
 
     /**
@@ -71,31 +65,9 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
-        if ($request->user()->profile_image)
-        {
-            $data = [
-                "id" => $request->user()->id,
-                "name" => $request->user()->name,
-                "email" => $request->user()->email,
-                "profile_image" => $request->user()->image_url,
-            ];
-        } else
-        {
-            $data = [
-                "id" => $request->user()->id,
-                "name" => $request->user()->name,
-                "email" => $request->user()->email,
-                "profile_image" => asset('images/user_icon.png')
-            ];
-        }
+        // TODO: エラーレスポンス導入時にRequestからのエラー返却考える
+        $this->setResponseData(['status' => true]);
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'user' => $data,
-                ],
-            ], 200
-        );
+        return $this->responseSuccess();
     }
 }

@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\PostFormRequest;
 use App\Facades\PostService;
 use App\Models\Post;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class PostController extends BaseController
 {
     /**
      * 教案一覧取得
@@ -214,37 +213,40 @@ class PostController extends Controller
         $posts = \Auth::user()
             ->bookmark_posts()
             ->latest()
-            ->with('user')
+            ->with(['user', 'text'])
             ->get();
 
-        // ユーザー名、テキスト名を含む新しいコレクションを作成
-        $posts = $posts->map(function ($post) {
-            $data = [
-                "id" => $post->id,
-                "title" => $post->title,
-                "description" => $post->description,
-                "level" => $post->level,
-                "user" => [
-                    "id" => $post->user_id,
-                    "name" => $post->user->name,
+        $response = [];
+        foreach ($posts as $post)
+        {
+            $text = null;
+            if ($post->text_id)
+            {
+                $text = [
+                    'id'   => $post->text_id,
+                    'name' => $post->text->text_name,
+                ];
+            }
+
+            $tmp = [
+                'id'          => $post->id,
+                'title'       => $post->title,
+                'description' => $post->description,
+                'level'       => $post->level,
+                'user'        => [
+                    'id'            => $post->user_id,
+                    'name'     => $post->user->name,
+                    'profile_image' => $post->user->profile_image ? $post->user->image_url : asset('images/user_icon.png'),
                 ],
-                "text" => [
-                    "id" => $post->text_id ?? null,
-                    "name" => $post->text->text_name ?? null,
-                ],
-                "updated_at" => $post->created_at,
+                'text'        => $text,
+                'created_at'  => $post->created_at,
+                'updated_at'  => $post->updated_at,
             ];
+            array_push($response, $tmp);
+        }
 
-            return $data;
-        });
+        $this->setResponseData($response);
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'posts' => $posts,
-                ],
-            ], 200
-        );
+        return $this->responseSuccess(false);
     }
 }
