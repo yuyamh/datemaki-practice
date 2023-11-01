@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
     /**
      * ユーザー一覧取得
@@ -28,37 +27,21 @@ class UserController extends Controller
 
         $users = $query->get();
 
-        // 送信するユーザー情報のコレクションを編成
-        $users = $users->map(function ($user) {
+        $response = [];
+        foreach ($users as $user)
+        {
+            $tmp = [
+                'id'            => $user->id,
+                'user_name'     => $user->name,
+                'profile_image' => $user->profile_image ? $user->image_url : asset('images/user_icon.png'),
+                'posts_counts'  => count($user->posts)
+            ];
+            array_push($response, $tmp);
+        }
 
-            // // プロフィール画像未設定の場合は、デフォルト画像をセットする。
-            if ($user->profile_image)
-            {
-                $data = [
-                    "id" => $user->id,
-                    "name" => $user->name,
-                    "profile_image" => $user->image_url,
-                    "posts_counts" => count($user->posts)
-                ];
-            } else
-            {
-                $data = [
-                    "id" => $user->id,
-                    "name" => $user->name,
-                    "profile_image" => asset('images/user_icon.png'),
-                    "posts_counts" => count($user->posts)
-                ];
-            }
+        $this->setResponseData($response);
 
-            return $data;
-        });
-
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => $users,
-            ], 200
-        );
+        return $this->responseSuccess(false);
     }
 
     /**
