@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use App\Models\Text;
 use Illuminate\Http\Request;
 
-class TextController extends Controller
+class TextController extends BaseController
 {
     /**
      * テキストの一覧取得
@@ -15,11 +14,18 @@ class TextController extends Controller
     {
         $texts = Text::all();
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => $texts,
-            ], 200
-        );
+        $response = [];
+        foreach ($texts as $text)
+        {
+            $tmp = [
+                'id'   => $text->id,
+                'name' => $text->text_name,
+            ];
+            array_push($response, $tmp);
+        }
+
+        $this->setResponseData($response);
+
+        return $this->responseSuccess(false);
     }
 }
