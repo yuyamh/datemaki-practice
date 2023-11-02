@@ -15,39 +15,43 @@ class PostController extends BaseController
     public function index()
     {
         $posts = Post::select('id', 'title', 'description', 'level', 'user_id','text_id', 'updated_at')
-            ->latest('updated_at')
             ->with(['user', 'text'])
+            ->latest('updated_at')
             ->get();
 
-        // ユーザー名、テキスト名を含む新しいコレクションを作成
-        $posts = $posts->map(function ($post) {
-            $data = [
-                "id" => $post->id,
-                "title" => $post->title,
-                "description" => $post->description,
-                "level" => $post->level,
-                "user" => [
-                    "id" => $post->user_id,
-                    "name" => $post->user->name,
+        $response = [];
+        foreach ($posts as $post)
+        {
+            $text = null;
+            if ($post->text_id)
+            {
+                $text = [
+                    'id'   => $post->text_id,
+                    'name' => $post->text->text_name,
+                ];
+            }
+            $tmp = [
+                'id'          => $post->id,
+                'title'       => $post->title,
+                'description' => $post->description,
+                'level'       => $post->level,
+                'user'        => [
+                    'id'            => $post->user_id,
+                    'name'          => $post->user->name,
+                    'profile_image' => $post->user->profile_image ? $post->user->image_url : asset('images/user_icon.png'),
+
                 ],
-                "text" => [
-                    "id" => $post->text_id ?? null,
-                    "name" => $post->text->text_name ?? null,
-                ],
-                "updated_at" => $post->updated_at,
+                'text'        => $text,
+                'updated_at'  => $post->updated_at,
             ];
+            array_push($response, $tmp);
+        }
 
-            return $data;
-        });
+        // TODO:paginationのセット
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'posts' => $posts,
-                ],
-            ], 200
-        );
+        $this->setResponseData($response);
+
+        return $this->responseSuccess(false);
     }
 
 
@@ -87,14 +91,9 @@ class PostController extends BaseController
             $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
         }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'post' => $post,
-                ],
-            ], 200
-        );
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 
     /**
@@ -107,36 +106,32 @@ class PostController extends BaseController
             $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
         }
 
-        $post = [
-            "id" => $post->id,
-            "title" => $post->title,
-            "description" => $post->description,
-            "user" => [
-                "id" => $post->user_id,
-                "name" => $post->user->name,
+        $response = [
+            'id'          => $post->id,
+            'title'       => $post->title,
+            'description' => $post->description,
+            'level'       => $post->level,
+            'user'        => [
+                'id'   => $post->user_id,
+                'name' => $post->user->name,
             ],
-            "file" => [
-                "file_name" => $post->file_name ?? null,
-                "file_mimetype" => $post->file_mimetype ?? null,
-                "file_size" => $post->file_size ?? null,
-                "file_url" => $post->file_name ? $post->file_url : null, // ファイル添付がない場合は、URLをNULLで返す
+            'file' => [
+                'file_name'     => $post->file_name ?? null,
+                'file_mimetype' => $post->file_mimetype ?? null,
+                'file_size'     => $post->file_size ?? null,
+                'file_url'      => $post->file_name ? $post->file_url : null,
             ],
-            "text" => [
-                "id" => $post->text_id ?? null,
-                "name" => $post->text->text_name ?? null,
+            'text' => [
+                'id'   => $post->text_id ?? null,
+                'name' => $post->text->text_name ?? null,
             ],
-            "created_at" => $post->created_at,
-            "updated_at" => $post->created_at,
+            'created_at'  => $post->created_at,
+            'updated_at'  => $post->created_at,
         ];
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'post' => $post,
-                ],
-            ], 200
-        );
+        $this->setResponseData($response);
+
+        return $this->responseSuccess();
     }
 
     /**
@@ -177,14 +172,9 @@ class PostController extends BaseController
             $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
         }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'post' => $post,
-                ],
-            ], 200
-        );
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 
     /**
@@ -197,12 +187,10 @@ class PostController extends BaseController
         // アップロードされたファイルの削除
         \Storage::delete('public/files/' . $post->file_name);
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => "OK",
-            ], 200
-        );
+        // TODO:エラーレスポンス導入
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 
     /**

@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Requests\Api\AuthenticateRequest;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class AuthenticateController extends Controller
+class AuthenticateController extends BaseController
 {
 
     /**
@@ -20,9 +19,11 @@ class AuthenticateController extends Controller
         if (Auth::attempt($credentials))
         {
             $token = Auth::user()->createToken('AccessToken')->plainTextToken;
-            return response()->json(['token' => $token], 200);
+            $this->setResponseData(['token' => $token]);
+            return $this->responseSuccess();
         } else
         {
+            // TODO:エラーレスポンス
             return response()->json(['error' => '認証に失敗しました。'], 401);
         }
     }
@@ -33,6 +34,8 @@ class AuthenticateController extends Controller
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
-        return response()->json(['message' => 'ログアウトしました。'], 200);
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 }
