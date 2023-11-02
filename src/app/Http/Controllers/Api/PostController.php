@@ -187,12 +187,10 @@ class PostController extends BaseController
         // アップロードされたファイルの削除
         \Storage::delete('public/files/' . $post->file_name);
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => "OK",
-            ], 200
-        );
+        // TODO:エラーレスポンス導入
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 
     /**
