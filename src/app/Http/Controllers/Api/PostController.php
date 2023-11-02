@@ -91,14 +91,9 @@ class PostController extends BaseController
             $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
         }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'post' => $post,
-                ],
-            ], 200
-        );
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 
     /**
@@ -177,14 +172,9 @@ class PostController extends BaseController
             $post->file_size = PostService::convertBytesToMegaBytes($post->file_size);
         }
 
-        return response()->json(
-            [
-                'status' => 'true',
-                'result' => [
-                    'post' => $post,
-                ],
-            ], 200
-        );
+        $this->setResponseData(['status' => 'true']);
+
+        return $this->responseSuccess();
     }
 
     /**
