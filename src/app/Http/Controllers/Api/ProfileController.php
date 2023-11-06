@@ -65,7 +65,6 @@ class ProfileController extends BaseController
 
         $request->user()->save();
 
-        // TODO: エラーレスポンス導入時にRequestからのエラー返却考える
         $this->setResponseData(['status' => true]);
 
         return $this->responseSuccess();

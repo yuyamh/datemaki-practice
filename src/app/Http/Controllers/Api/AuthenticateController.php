@@ -23,8 +23,9 @@ class AuthenticateController extends BaseController
             return $this->responseSuccess();
         } else
         {
-            // TODO:エラーレスポンス
-            return response()->json(['error' => '認証に失敗しました。'], 401);
+            $this->setStatusCode(401);
+            $this->setErrorMessages(['メールアドレスまたはパスワードが間違っています']);
+            return $this->responseFailed();
         }
     }
 
