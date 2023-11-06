@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class ApiProfileUpdateRequest extends FormRequest
+class ApiProfileUpdateRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -33,14 +33,4 @@ class ApiProfileUpdateRequest extends FormRequest
             'image' => ['file', 'mimes:gif,png,jpg,webp', 'max:51200'],
         ];
     }
-
-    protected function failedValidation(Validator $validator)
-    {
-        $res = response()->json([
-            'errors' => $validator->errors(),
-            ], 400);
-        throw new HttpResponseException($res);
-    }
-
-
 }
