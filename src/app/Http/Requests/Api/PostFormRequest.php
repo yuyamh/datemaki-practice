@@ -7,7 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\Rule;
 
-class PostFormRequest extends FormRequest
+class PostFormRequest extends BaseFormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -41,16 +41,5 @@ class PostFormRequest extends FormRequest
         ];
 
         return $rules;
-    }
-
-    // API用のエラーレスポンスを返す
-    protected function failedValidation(Validator $validator)
-    {
-        $res = response()->json([
-            'errors' => $validator->errors(),
-            ],
-            400);
-            
-        throw new HttpResponseException($res);
     }
 }
