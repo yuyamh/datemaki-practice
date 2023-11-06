@@ -19,15 +19,10 @@ class BookmarkController extends BaseController
         } else
         {
             // すでにブックマーク済みの場合
-            // TODO:エラーレスポンス共通化
-            return response()->json(
-                [
-                    'status' => 'false',
-                    'result' => [
-                        'message' => 'すでにブックマーク済みです。',
-                    ]
-                ], 409
-            );
+            $this->setStatusCode(400);
+            $this->setErrorMessages(['すでにブックマーク済みです。']);
+            $this->setResponseData(['status' => false]);
+            return $this->responseFailed();
         }
 
         $this->setResponseData(['status' => true]);
@@ -47,15 +42,10 @@ class BookmarkController extends BaseController
         } else
         {
             // すでにブックマーク解除済みの場合
-            // TODO:エラーレスポンス共通化
-            return response()->json(
-                [
-                    'status' => 'false',
-                    'result' => [
-                        'message' => 'すでにブックマーク解除済みです。',
-                    ]
-                ], 409
-            );
+            $this->setStatusCode(400);
+            $this->setErrorMessages(['すでにブックマーク解除済みです。']);
+            $this->setResponseData(['status' => false]);
+            return $this->responseFailed();
         }
 
         $this->setResponseData(['status' => true]);
