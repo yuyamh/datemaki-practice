@@ -20,6 +20,13 @@ trait ResponseJson
     protected $status = true;
 
     /**
+     * エラーメッセージ
+     *
+     * @var bool
+     */
+    protected $errorMessages = [];
+
+    /**
      * レスポンスデータ
      *
      * @var bool
@@ -34,6 +41,17 @@ trait ResponseJson
     protected $responseHeader = [];
 
     /**
+     * ステータスコードをセット
+     *
+     * @param String $statusCode
+     * @return void
+     */
+    protected function setStatusCode($statusCode)
+    {
+        $this->statusCode = $statusCode;
+    }
+
+    /**
      * レスポンスデータをセット
      *
      * @param Array data
@@ -42,6 +60,17 @@ trait ResponseJson
     protected function setResponseData($data = [])
     {
         $this->data = $data;
+    }
+
+    /**
+     * エラーメッセージをセット
+     *
+     * @param Array $errorMessages
+     * @return void
+     */
+    protected function setErrorMessages($errorMessages)
+    {
+        $this->errorMessages = $errorMessages;
     }
 
     /**
@@ -68,11 +97,23 @@ trait ResponseJson
     }
 
     /**
+     * レスポンス失敗
+     *
+     * @return Array json
+     */
+    protected function responseFailed($isObject = true)
+    {
+        $this->status = false;
+
+        return $this->responseJson($isObject);
+    }
+
+    /**
      * 共通のJSONレスポンス内容を作成
      *
      * @return Array json
      */
-    private function responseJson($isObject = true)
+    protected function responseJson($isObject = true)
     {
         if ($isObject) {
             $data = !empty($this->data) ? $this->data : (object)[];
@@ -82,7 +123,7 @@ trait ResponseJson
 
         $response = [
             'data' => $data,
-            // 'error_messages' => $this->errorMessages
+            'error_messages' => $this->errorMessages
         ];
 
         return response()->json($response, $this->statusCode)
