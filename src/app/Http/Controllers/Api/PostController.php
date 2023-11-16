@@ -183,11 +183,39 @@ class PostController extends BaseController
     public function destroy(Post $post)
     {
         $this->authorize($post);
-        $post->delete();
-        // アップロードされたファイルの削除
-        \Storage::delete('public/files/' . $post->file_name);
 
-        // TODO:エラーレスポンス導入
+        // 教案に紐づくfileNameがデータとして存在するか確認する
+        // 存在する場合、実データがストレージ上に格納されているかどうか確認する Storage::exists
+        // トランザクション開始　
+        // Postテーブルから該当データ行の削除を試みる　$posts->delete();
+        // 成功した場合、fileNameに紐づく実データの削除を試みる Storage::delete();
+        // いずれも成功した場合、トランザクションを終了（コミット）する
+        // いずれか一方でも失敗した場合、ロールバックと、ファイルの復元を試みた上で、メソッドの呼び出し元にエラーを伝達する
+        // ロールバックもファイル復元も失敗した場合は、元の状態に戻せないということなので、特に強い警告度で呼び出し元にエラーを伝達する
+
+        try
+        {
+            // 教案の削除
+            if (!$post->delete())
+            {
+                throw new \Exception('教案の削除に失敗しました');
+            }
+
+            // アップロードされたファイルの削除
+            if (isset($post->file_name))
+            {
+                if (!\Storage::exists('public/files/' . $post->file_name) || !\Storage::delete('public/files/' . $post->file_name))
+                {
+                    throw new \Exception('ファイルの削除に失敗しました');
+                }
+            }
+        } catch (\Exception $e)
+        {
+            $this->setStatusCode(500);
+            $this->setErrorMessages([$e->getMessage()]);
+            return $this->responseFailed();
+        }
+
         $this->setResponseData(['status' => 'true']);
 
         return $this->responseSuccess();
