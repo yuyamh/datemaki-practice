@@ -40,6 +40,12 @@
             </div>
         @endif
 
+        @if (session('failureMessage'))
+            <div class="p-4 m-3 bg-red-100 rounded-lg shadow max-w-7xl">
+                <p class="text-red-700">{{ session('failureMessage') }}</p>
+            </div>
+        @endif
+
         <main class="w-full row-auto px-4 mx-auto">
             <div class="block w-full py-12 lg:px-4 lg:grid-cols-12 lg:grid">
                 <div class="lg:col-span-9">
