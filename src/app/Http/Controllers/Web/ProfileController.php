@@ -30,31 +30,42 @@ class ProfileController extends Controller
         // アクセス権の適用
         $this->authorize($request->user());
 
-        $request->user()->fill($request->validated());
-
-        if ($request->user()->isDirty('email'))
+        try
         {
-            $request->user()->email_verified_at = null;
-        }
+            $request->user()->fill($request->validated());
 
-       if ($request->hasFile('image'))
-       {
-            // プロフィール画像ファイルの保存
-            $file = $request->file('image');
-            $ext = $file->getClientOriginalExtension();
-            $filename = time() . "." . $ext;
-            $file->storeAs('public/profile_icons', $filename);
-
-            // 古いプロフィール画像を削除
-            if (isset($request->user()->profile_image))
+            if ($request->user()->isDirty('email'))
             {
-                \Storage::delete('public/profile_icons/' . $request->user()->profile_image);
+                $request->user()->email_verified_at = null;
             }
 
-            $request->user()->profile_image = $filename;
-       }
+            if ($request->hasFile('image'))
+            {
+                // プロフィール画像ファイルの保存
+                $file = $request->file('image');
+                $ext = $file->getClientOriginalExtension();
+                $filename = time() . "." . $ext;
+                $file->storeAs('public/profile_icons', $filename);
 
-        $request->user()->save();
+                // 古いプロフィール画像を削除
+                if (isset($request->user()->profile_image))
+                {
+                    \Storage::delete('public/profile_icons/' . $request->user()->profile_image);
+                }
+
+                $request->user()->profile_image = $filename;
+            }
+
+            if (!$request->user()->save())
+            {
+                throw new \Exception('アカウント情報の更新に失敗しました。時間を空けて再度挑戦してください。');
+            }
+        } catch (\Exception $e)
+        {
+            return back()
+                ->withInput()
+                ->with('failureMessage', $e->getMessage());
+        }
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
