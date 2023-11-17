@@ -176,33 +176,46 @@ class PostController extends Controller
     public function update(StorePostRequest $request, Post $post)
     {
         $this->authorize($post);
-        $validated = $request->validated();
 
-        // ファイルの差し替えを行う
-        if (isset($validated['file_name']))
+        try
         {
-            // 元ファイルの削除
-            \Storage::delete('public/files/' . $post->file_name);
+            $validated = $request->validated();
 
-            // 新ファイルの保存
-            $file = $validated['file_name'];
-            $ext  = $file->getClientOriginalextension();
-            $fileName = time() . '.' . $ext;
-            $file->storeAs('public/files', $fileName);
+            // ファイルの差し替えを行う
+            if (isset($validated['file_name']))
+            {
+                // 元ファイルの削除
+                \Storage::delete('public/files/' . $post->file_name);
 
-            // 新ファイルのデータをpostsテーブルの各カラムに保存
-            $post->file_name = $fileName;
-            $post->file_mimetype = $file->getMimeType();
-            $post->file_size = $file->getSize();
+                // 新ファイルの保存
+                $file     = $validated['file_name'];
+                $ext      = $file->getClientOriginalextension();
+                $fileName = time() . '.' . $ext;
+                $file->storeAs('public/files', $fileName);
+
+                // 新ファイルのデータをpostsテーブルの各カラムに保存
+                $post->file_name     = $fileName;
+                $post->file_mimetype = $file->getMimeType();
+                $post->file_size     = $file->getSize();
+            }
+
+            $post->title       = $validated['title'];
+            $post->description = $validated['description'];
+            $post->level       = $validated['level'];
+            $post->text_id     = $validated['text_id'];
+
+            if (!$post->save())
+            {
+                throw new \Exception('教案の編集に失敗しました。時間を空けて再度挑戦してください。');
+            }
+        } catch (\Exception $e)
+        {
+            return back()
+                ->withInput()
+                ->with('failureMessage', $e->getMessage());
         }
-
-        $post->title = $validated['title'];
-        $post->description = $validated['description'];
-        $post->level = $validated['level'];
-        $post->text_id = $validated['text_id'];
-        $post->save();
-
-        return redirect(route('posts.show', $post))->with('successMessage', '教案を更新しました。');
+        return redirect(route('posts.show', $post))
+                ->with('successMessage', '教案を更新しました。');
     }
 
     /**
