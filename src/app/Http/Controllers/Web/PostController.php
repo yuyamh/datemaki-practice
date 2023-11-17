@@ -80,31 +80,44 @@ class PostController extends Controller
      */
     public function store(StorePostRequest $request)
     {
-        $validated = $request->validated();
-
-        $post = new Post();
-        $post->title = $validated['title'];
-        $post->description = $validated['description'];
-        $post->level = $validated['level'];
-        $post->user_id = \Auth::id();
-        $post->text_id = $validated['text_id'];
-
-        if (isset($validated['file_name']))
+        try
         {
-            $file = $validated['file_name'];
-            $ext  = $file->getClientOriginalextension();
+            $validated = $request->validated();
 
-            // ファイルをストレージへ保存
-            $fileName = time() . '.' . $ext;
-            $file->storeAs('public/files', $fileName);
+            $post              = new Post();
+            $post->title       = $validated['title'];
+            $post->description = $validated['description'];
+            $post->level       = $validated['level'];
+            $post->user_id     = \Auth::id();
+            $post->text_id     = $validated['text_id'];
 
-            $post->file_name = $fileName;
-            $post->file_mimetype = $file->getMimeType();
-            $post->file_size = $file->getSize();
+            if (isset($validated['file_name']))
+            {
+                $file = $validated['file_name'];
+                $ext  = $file->getClientOriginalextension();
+
+                // ファイルをストレージへ保存
+                $fileName = time() . '.' . $ext;
+                $file->storeAs('public/files', $fileName);
+
+                $post->file_name     = $fileName;
+                $post->file_mimetype = $file->getMimeType();
+                $post->file_size     = $file->getSize();
+            }
+
+            if (!$post->save())
+            {
+                throw new \Exception('教案の投稿に失敗しました。時間を空けて再度投稿してください。');
+            }
+        }catch (\Exception $e)
+        {
+            return back()
+                ->withInput()
+                ->with('failureMessage', $e->getMessage());
         }
-        $post->save();
 
-        return redirect(route('myposts.index'))->with('successMessage', '教案を投稿しました。');
+        return redirect(route('myposts.index'))
+            ->with('successMessage', '教案を投稿しました。');
     }
 
     /**
