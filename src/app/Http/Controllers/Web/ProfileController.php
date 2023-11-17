@@ -86,13 +86,26 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        // ユーザーが設定したプロフィールアイコン画像の削除
-        if ((\Storage::exists('public/profile_icons')) && !is_null($user->profile_image))
+        try
         {
-            \Storage::delete('public/profile_icons/' . $user->profile_image);
-        }
+            if (!$user->delete())
+            {
+                throw new \Exception('アカウントの削除に失敗しました。ログイン後、再度挑戦してください。');
+            }
 
-        $user->delete();
+            // ユーザーが設定したプロフィールアイコン画像の削除
+            if ((\Storage::exists('public/profile_icons')) && !is_null($user->profile_image))
+            {
+                \Storage::delete('public/profile_icons/' . $user->profile_image);
+            }
+        } catch (\Exception $e)
+        {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return \redirect(route('posts.index'))
+                ->with('failureMessage', $e->getMessage());
+        }
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
