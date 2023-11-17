@@ -19,8 +19,8 @@
 
         {{-- アイコン変更、ゲストユーザーの場合は変更不可 --}}
         <div>
-           <x-picture-input :user="$user" />
-           <x-input-error class="mt-2" :messages="$errors->get('picture')" />
+            <x-picture-input :user="$user" />
+            <x-input-error class="mt-2" :messages="$errors->get('image')" />
         </div>
 
         {{-- 名前変更、ゲストユーザーの場合は変更不可 --}}
