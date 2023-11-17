@@ -227,12 +227,24 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $this->authorize($post);
-        $post->delete();
-        // アップロードされたファイルの削除
-        \Storage::delete('public/files/' . $post->file_name);
 
-        return redirect(route('myposts.index'))->with('successMessage', '教案を削除しました。');
+        try
+        {
+            if (!$post->delete())
+            {
+                throw new \Exception('教案の削除に失敗しました。時間を空けて再度挑戦してください。');
+            }
 
+            // アップロードされたファイルの削除
+            \Storage::delete('public/files/' . $post->file_name);
+        } catch (\Exception $e)
+        {
+            return redirect(route('myposts.index'))
+                ->with('failureMessage', $e->getMessage());
+        }
+
+        return redirect(route('myposts.index'))
+            ->with('successMessage', '教案を削除しました。');
     }
 
     /**
